@@ -1,0 +1,44 @@
+Klienten sender meldinger p� opp til 4 bytes til server.
+Meldingen sendes som en enkelt byte (char msg_server),
+eller 4 bytes (char msg_server[4]).
+
+Klienten sender 3 typer meldinger:
+
+1. En melding som henter jobber (1 eller flere)
+	- Bruker 4 bytes for type melding og antall jobber
+	- msg_server[0] har karakter '1' for henting av jobber
+	- msg_server[1-2-3] har et 3-bytes tall (antall jobber)
+
+2. En melding som varsler om at klienten terminerer normalt
+	- Sender en enkelt karakter (byte) for type melding
+	- msg_server har karakter '2' for normal terminering
+
+3. En melding som varsler om at klienten terminerer grunnet feil
+	- Sender en enkelt karakter (byte) for type melding
+	- msg_server har karakter '3' for terminering grunnet feil
+
+Serveren er kodet slik at den leser f�rst en byte for typen melding, og ut
+i fra den vet den om den trenger � lese flere bytes.
+
+Server sender 5 bytes (jobbinfo og tekstlengde) og eventuelt jobbtekst.
+Server sender 5 typer meldinger:
+
+1. Melding som sender jobbtekst for printing til stdout
+	- Jobbtype 0 ('O')
+	- De andre bytesene er gitt av lest jobb
+
+2. Melding som sender jobbtekst for printing til stderr
+	- Jobbtype 1 ('E')
+	- De andre bytesene er gitt av lest jobb
+
+3. Melding som sender beskjed om korrupt fil
+	- Jobbtype 3
+	- Tekstlengde er 0 og jobbteksten er tom
+
+4. Melding som sender beskjed om at server terminerer grunnet feil
+	- Jobbtype 5
+	- Tekstlengde er 0 og jobbteksten er tom
+
+5. Melding som sender beskjed om at jobben er lest ferdig
+	- Jobbtype 7 ('Q')
+	- Tekstlengde er 0 og jobbteksten er tom
